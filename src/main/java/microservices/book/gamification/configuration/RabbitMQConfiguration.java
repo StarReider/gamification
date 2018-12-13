@@ -1,16 +1,23 @@
 package microservices.book.gamification.configuration;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.annotation.RabbitListenerConfigurer;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistrar;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.handler.annotation.support.DefaultMessageHandlerMethodFactory;
+
+import static java.lang.System.getenv;
 
 /**
 * Configures RabbitMQ to use events in our application.
@@ -44,6 +51,33 @@ public class RabbitMQConfiguration implements RabbitListenerConfigurer {
 		factory.setMessageConverter(consumerJackson2MessageConverter());
 		return factory;
 	}
+	
+	@Bean
+	 public ConnectionFactory connectionFactory() {
+	     final URI rabbitMqUrl;
+	     try {
+	         rabbitMqUrl = new URI(getEnvOrThrow("CLOUDAMQP_URL"));
+	     } catch (URISyntaxException e) {
+	         throw new RuntimeException(e);
+	     }
+
+	     final CachingConnectionFactory factory = new CachingConnectionFactory();
+	     factory.setUsername(rabbitMqUrl.getUserInfo().split(":")[0]);
+	     factory.setPassword(rabbitMqUrl.getUserInfo().split(":")[1]);
+	     factory.setHost(rabbitMqUrl.getHost());
+	     factory.setPort(rabbitMqUrl.getPort());
+	     factory.setVirtualHost(rabbitMqUrl.getPath().substring(1));
+
+	     return factory;
+	 }
+	
+	private static String getEnvOrThrow(String name) {
+        final String env = getenv(name);
+        if (env == null) {
+            throw new IllegalStateException("Environment variable [" + name + "] is not set.");
+        }
+        return env;
+    }
 
 	@Override
 	public void configureRabbitListeners(RabbitListenerEndpointRegistrar registrar) {
