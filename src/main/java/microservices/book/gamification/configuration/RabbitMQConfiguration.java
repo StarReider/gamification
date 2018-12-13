@@ -12,6 +12,8 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistrar;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
@@ -23,6 +25,7 @@ import static java.lang.System.getenv;
 * Configures RabbitMQ to use events in our application.
 */
 @Configuration
+@EnableAutoConfiguration(exclude=RabbitAutoConfiguration.class)
 public class RabbitMQConfiguration implements RabbitListenerConfigurer {
 
 	@Bean
