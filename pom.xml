@@ -26,6 +26,38 @@
 		<spring-cloud.version>Greenwich.M1</spring-cloud.version>
 	</properties>
 	
+	<profiles>
+		<profile>
+			<id>prod</id>
+			<properties>
+        		<activatedProperties>prod</activatedProperties>
+    		</properties>
+			<dependencies>
+				<dependency>
+					<groupId>org.postgresql</groupId>
+		  			<artifactId>postgresql</artifactId>
+					<scope>runtime</scope>
+				</dependency>
+	        </dependencies>
+        </profile>
+        <profile>
+        	<id>dev</id>
+        	<properties>
+        		<activatedProperties>dev</activatedProperties>
+    		</properties>
+        	<activation>
+        		<activeByDefault>true</activeByDefault>
+    		</activation>
+			<dependencies>
+				<dependency>
+					<groupId>com.h2database</groupId>
+					<artifactId>h2</artifactId>
+					<scope>runtime</scope>
+				</dependency>
+	        </dependencies>
+        </profile>
+	</profiles>
+	
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -89,6 +121,12 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<profiles>
+						<profile>prod</profile>
+						<profile>dev</profile>
+					</profiles>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
