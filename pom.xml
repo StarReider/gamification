@@ -32,6 +32,9 @@
 			<properties>
         		<activatedProperties>prod</activatedProperties>
     		</properties>
+    		<activation>
+        		<activeByDefault>true</activeByDefault>
+    		</activation>
 			<dependencies>
 				<dependency>
 					<groupId>org.postgresql</groupId>
@@ -45,9 +48,6 @@
         	<properties>
         		<activatedProperties>dev</activatedProperties>
     		</properties>
-        	<activation>
-        		<activeByDefault>true</activeByDefault>
-    		</activation>
 			<dependencies>
 				<dependency>
 					<groupId>com.h2database</groupId>
